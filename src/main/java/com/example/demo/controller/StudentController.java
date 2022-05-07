@@ -1,5 +1,8 @@
-package com.example.demo;
+package com.example.demo.controller;
 
+import com.example.demo.Student;
+import com.example.demo.StudentRowMapper;
+import com.example.demo.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -15,11 +18,14 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/students")
+@RequestMapping
 @Validated
 public class StudentController {
+//    @Autowired
+//    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private StudentService studentService;
 
     /*@PostMapping
     public String create(@RequestBody @Valid Student student){
@@ -42,23 +48,18 @@ public class StudentController {
         return "delete student";
     }*/
 
-    @PostMapping
-    public String insert(@RequestBody Student student){
-        Map<String, Object> map = new HashMap<>();
-        String sql = "INSERT INTO student(name) VALUE (:studentName)";
-        map.put("studentName" , student.getName());
+    @PostMapping("/test1/students")
+    public String insertTest1Db(@RequestBody Student student){
+        return studentService.addTest1(student);
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
-        // get auto generated id
-        int id = keyHolder.getKey().intValue();
-        System.out.println("mysql 自動生成的 id 為 " + id);
-
-        return  "insert a new student.";
     }
 
-    @PostMapping("/batch")
+    @PostMapping("/test2/students")
+    public String insertTest2Db(@RequestBody Student student){
+        return studentService.addTest2(student);
+    }
+
+    /*@PostMapping("/batch")
     public String batchInsert(@RequestBody List<Student> studentList){
         String sql = "INSERT INTO student(name) VALUE (:studentName)";
         MapSqlParameterSource[] parameterSources = new MapSqlParameterSource[studentList.size()];
@@ -90,16 +91,12 @@ public class StudentController {
         Map<String, Object> map = new HashMap<>();
         List<Student> list = namedParameterJdbcTemplate.query(sql, map, new StudentRowMapper());
         return list;
-    }
+    }*/
 
-    @GetMapping("/{studentId}")
+    /*@GetMapping("/{studentId}")
     public Student getStudent(@PathVariable Integer studentId){
-        String sql = "SELECT id, name FROM student WHERE id = :studentId";
-        Map<String, Object> map = new HashMap<>();
-        map.put("studentId", studentId);
-        List<Student> list = namedParameterJdbcTemplate.query(sql, map, new StudentRowMapper());
-        return list.size() > 0 ? list.get(0) : null;
-    }
+        return studentService.getById(studentId);
+    }*/
 
 
 }
